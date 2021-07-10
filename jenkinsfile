@@ -1,0 +1,24 @@
+node('master') 
+{
+    stage('Continuous Download')
+    {
+       git ' https://github.com/aziz27uk/intelliqitdev.git'
+    }
+        stage('Continuous Build ')
+        {
+           sh 'mvn package'
+        }
+        stage('Continuous Deployment')
+        {
+        sh 'scp /home/ubuntu/.jenkins/workspace/Intelliqit/pipeline-scripted/webapp/target/webapp.war ubuntu@172.31.13.170:/var/lib/tomcat8/webapps/qaenv.war'
+        }
+        stage('Continuous Testing')
+        {
+            git 'https://github.com/aziz27uk/intelliqitqa.git'
+           sh 'java -jar /home/ubuntu/.jenkins/workspace/Intelliqit/pipeline-scripted/testing.jar'
+        }
+        stage('Continuous Delivery')
+        {
+          sh 'scp /home/ubuntu/.jenkins/workspace/Intelliqit/pipeline-scripted/webapp/target/webapp.war ubuntu@172.31.6.247:/var/lib/tomcat8/webapps/prdenv.war'  
+        }
+}
